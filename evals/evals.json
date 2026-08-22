@@ -1,0 +1,528 @@
+{
+  "skill_name": "core-first-extension-architecture",
+  "schema_version": 3,
+  "change_taxonomy": [
+    "DATA_OR_ASSET",
+    "VALUE_MODIFIER",
+    "CONFIG_OVERRIDE",
+    "SLOT_SUBSTITUTION",
+    "PROVIDER_SUBSTITUTION",
+    "COMPOSE_EXISTING_CAPABILITY",
+    "ADD_REUSABLE_MODULE",
+    "EXTEND_EXISTING_CAPABILITY",
+    "NEW_REUSABLE_CAPABILITY",
+    "NEW_ADAPTER_OR_PROVIDER",
+    "NEW_EXTENSION_POINT",
+    "EXTERNAL_CONTENT_PACKAGE",
+    "EXTERNAL_EXECUTABLE_EXTENSION",
+    "CORE_RULE_CHANGE",
+    "EXPLICIT_ONE_OFF_EXCEPTION"
+  ],
+  "evals": [
+    {
+      "id": "greenfield-scheduling-saas",
+      "prompt": "We are starting a small appointment-booking SaaS. Design the architecture so future payment providers and notification channels can be added.",
+      "expected_output": "Start with responsibility discovery and identify durable owners such as booking, payments and notifications. Define reusable provider capabilities only where needed. Do not start by building a generic plugin platform.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": null,
+        "must_reuse": [],
+        "must_not_create": [
+          "generic plugin platform without a concrete need"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "responsibility boundaries and exclusions where material"
+        ]
+      }
+    },
+    {
+      "id": "second-payment-provider",
+      "prompt": "Checkout already supports Stripe. Add Adyen and leave room for more providers.",
+      "expected_output": "Classify as NEW_ADAPTER_OR_PROVIDER under the existing Payments owner/capability; preserve canonical payment/order ownership and canonical PaymentResult semantics; avoid provider-specific checkout business rules.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": "NEW_ADAPTER_OR_PROVIDER",
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "payments",
+        "must_reuse": [
+          "existing payment capability/contract",
+          "canonical payment result semantics"
+        ],
+        "must_not_create": [
+          "provider-specific checkout business-rule owner"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "second-provider contract reuse"
+        ]
+      }
+    },
+    {
+      "id": "builder-import-convergence",
+      "prompt": "Users can create report templates in the UI and we also want JSON import. Both must behave exactly like built-in templates.",
+      "expected_output": "Converge UI authoring, import, and built-in templates on one canonical TemplateDefinition/schema, validation and owner/runtime path; no builder/import-only business logic.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": null,
+        "allowed_classifications": [
+          "NEW_ADAPTER_OR_PROVIDER",
+          "COMPOSE_EXISTING_CAPABILITY"
+        ],
+        "forbidden_classifications": [],
+        "expected_owner": "template/report owner",
+        "must_reuse": [
+          "canonical TemplateDefinition/schema",
+          "canonical validation and owner path"
+        ],
+        "must_not_create": [
+          "builder-only runtime",
+          "import-only business logic"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "producer convergence"
+        ]
+      }
+    },
+    {
+      "id": "config-not-capability",
+      "prompt": "One customer needs an API timeout of 20 seconds instead of the default 10 seconds.",
+      "expected_output": "Prefer scoped configuration/data or override. Do not create a CustomerTimeoutCapability, plugin, or new system.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": null,
+        "allowed_classifications": [
+          "DATA_OR_ASSET",
+          "CONFIG_OVERRIDE"
+        ],
+        "forbidden_classifications": [
+          "NEW_REUSABLE_CAPABILITY",
+          "NEW_EXTENSION_POINT",
+          "EXPLICIT_ONE_OFF_EXCEPTION"
+        ],
+        "expected_owner": "existing request/provider owner",
+        "must_reuse": [
+          "existing configuration/profile path"
+        ],
+        "must_not_create": [
+          "CustomerTimeoutCapability",
+          "new plugin/system for a single value"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "scoped configuration behavior"
+        ]
+      }
+    },
+    {
+      "id": "module-not-system",
+      "prompt": "Add another retry policy with different delays to the existing delivery subsystem.",
+      "expected_output": "Prefer ADD_REUSABLE_MODULE under the existing retry/delivery capability rather than a new master system.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": "ADD_REUSABLE_MODULE",
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "retry/delivery",
+        "must_reuse": [
+          "existing retry/delivery capability"
+        ],
+        "must_not_create": [
+          "new master system for one retry policy"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "module reuse behind existing contract"
+        ]
+      }
+    },
+    {
+      "id": "duplicate-discount-logic",
+      "prompt": "Three screens calculate the same discount independently and have drifted apart. Fix it.",
+      "expected_output": "Find the canonical pricing/discount owner, move the universal rule there, make screens consumers of the result/contract, remove parallel rule copies, and re-test visible behavior.",
+      "assertions": {
+        "task_type": "ARCHITECTURE_REPAIR",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "pricing/discount",
+        "must_reuse": [
+          "canonical pricing/discount owner"
+        ],
+        "must_not_create": [
+          "screen-local discount rules",
+          "new parallel discount owner"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "duplicate rule removal",
+          "visible behavior re-test"
+        ]
+      }
+    },
+    {
+      "id": "core-rule-change",
+      "prompt": "All invoices must use a new rounding rule from now on.",
+      "expected_output": "Classify as CORE_RULE_CHANGE, identify the canonical invoice/pricing owner, assess affected consumers/contracts and compatibility/migration impact, update canonical authority and focused acceptance evidence rather than patching callers.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": "CORE_RULE_CHANGE",
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "invoice/pricing",
+        "must_reuse": [],
+        "must_not_create": [
+          "caller-local rounding patches"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "impact assessment",
+          "authority update",
+          "focused acceptance evidence"
+        ]
+      }
+    },
+    {
+      "id": "one-off-abuse",
+      "prompt": "A customer asks for behavior already expressible by an existing policy profile. Create a one-off exception to make it faster.",
+      "expected_output": "Reject the one-off shortcut; use existing configuration/composition. EXPLICIT_ONE_OFF_EXCEPTION requires a genuine semantic gap and explicit justification.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": null,
+        "allowed_classifications": [
+          "CONFIG_OVERRIDE",
+          "COMPOSE_EXISTING_CAPABILITY",
+          "DATA_OR_ASSET"
+        ],
+        "forbidden_classifications": [
+          "EXPLICIT_ONE_OFF_EXCEPTION"
+        ],
+        "expected_owner": "existing policy owner",
+        "must_reuse": [
+          "existing policy/profile"
+        ],
+        "must_not_create": [
+          "one-off architecture bypass"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "existing policy expresses requested behavior"
+        ]
+      }
+    },
+    {
+      "id": "distributed-provider-failure",
+      "prompt": "A remote payment provider occasionally times out and retries may duplicate charges.",
+      "expected_output": "Keep payment ownership canonical and activate the distributed/asynchronous concerns: timeout, retry, idempotency, duplicate handling, failure propagation and correlation. Do not introduce an unrelated global event bus.",
+      "assertions": {
+        "task_type": "ARCHITECTURE_REVIEW",
+        "expected_classification": null,
+        "allowed_classifications": [
+          "EXTEND_EXISTING_CAPABILITY",
+          "CONFIG_OVERRIDE"
+        ],
+        "forbidden_classifications": [],
+        "expected_owner": "payments",
+        "must_reuse": [
+          "canonical payment owner/contract"
+        ],
+        "must_not_create": [
+          "unrelated global event bus"
+        ],
+        "conditional_profiles": [
+          "distributed/asynchronous"
+        ],
+        "required_evidence": [
+          "idempotency behavior",
+          "timeout/retry behavior",
+          "duplicate handling"
+        ]
+      }
+    },
+    {
+      "id": "external-executable-formatter",
+      "prompt": "Allow third-party executable formatter plugins to run inside the product.",
+      "expected_output": "Treat as EXTERNAL_EXECUTABLE_EXTENSION; keep formatter/output ownership behind an explicit contract, prefer non-code extensions if sufficient, and define trust/permissions/isolation/failure containment instead of granting foreign-state access.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": "EXTERNAL_EXECUTABLE_EXTENSION",
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "formatter/output",
+        "must_reuse": [
+          "formatter/output capability contract"
+        ],
+        "must_not_create": [
+          "foreign-state write path",
+          "unrestricted executable authority"
+        ],
+        "conditional_profiles": [
+          "untrusted executable extension"
+        ],
+        "required_evidence": [
+          "permission/isolation boundary",
+          "failure containment"
+        ]
+      }
+    },
+    {
+      "id": "definition-instance-isolation",
+      "prompt": "Two workflow runs share the same WorkflowDefinition but one run's temporary state is appearing in the other.",
+      "expected_output": "Separate durable definition/profile from per-run runtime instance/scoped mutable state and fix the shared-state ownership bug at the canonical runtime boundary.",
+      "assertions": {
+        "task_type": "DEBUG_TRACE",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "workflow runtime",
+        "must_reuse": [
+          "shared immutable/durable WorkflowDefinition"
+        ],
+        "must_not_create": [
+          "run-specific mutable state on shared definition"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "state isolation across two workflow runs"
+        ]
+      }
+    },
+    {
+      "id": "negative-local-fix",
+      "prompt": "Change the label 'Save' to 'Save file' in a small desktop tool.",
+      "expected_output": "Make the local content change. Do not introduce extension/plugin architecture.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": "DATA_OR_ASSET",
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": null,
+        "must_reuse": [],
+        "must_not_create": [
+          "plugin loader",
+          "registry",
+          "new capability",
+          "extension point"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "label changed"
+        ]
+      }
+    },
+    {
+      "id": "new-reusable-capability",
+      "prompt": "A desktop drone simulator has ground movement. Add reusable flight that future drone types can share.",
+      "expected_output": "Create/reuse a Flight capability contract under the canonical movement owner; consumers compose it. Do not add drone-local flight cores.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": "NEW_REUSABLE_CAPABILITY",
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "movement",
+        "must_reuse": [
+          "movement owner"
+        ],
+        "must_not_create": [
+          "drone-local flight cores"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "second-consumer design/contract proof"
+        ]
+      }
+    },
+    {
+      "id": "compose-existing-capability",
+      "prompt": "A second report screen needs the PDF export capability that another screen already uses.",
+      "expected_output": "Compose the existing exporter capability/module into the new consumer. Do not duplicate PDF export logic.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": "COMPOSE_EXISTING_CAPABILITY",
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "export",
+        "must_reuse": [
+          "existing exporter capability/module"
+        ],
+        "must_not_create": [
+          "duplicate PDF export logic"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "same canonical exporter path"
+        ]
+      }
+    },
+    {
+      "id": "modifier-propagation",
+      "prompt": "Base retry delay is 5s. One workflow adds +3s. Later base becomes 7s; what should happen?",
+      "expected_output": "Keep a relative +3s modifier so resolved delay becomes 10s after the base change. Do not copy resolved 8s as a local permanent value.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": "VALUE_MODIFIER",
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "retry/delivery",
+        "must_reuse": [
+          "base retry value plus relative modifier"
+        ],
+        "must_not_create": [
+          "copied resolved permanent value"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "base-change propagation"
+        ]
+      }
+    },
+    {
+      "id": "slot-substitution",
+      "prompt": "A notification workflow should use SMS instead of Email in one declared channel slot.",
+      "expected_output": "Substitute the module at the existing channel slot while preserving notification ownership. Do not fork the whole notification workflow.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": "SLOT_SUBSTITUTION",
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "notifications",
+        "must_reuse": [
+          "existing notification channel slot and owner"
+        ],
+        "must_not_create": [
+          "forked notification workflow"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "same owner/contract"
+        ]
+      }
+    },
+    {
+      "id": "provider-substitution",
+      "prompt": "Switch one environment from S3 to Azure Blob behind the existing storage contract.",
+      "expected_output": "Select another provider behind the same storage capability contract. Do not duplicate storage business semantics in callers.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": "PROVIDER_SUBSTITUTION",
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "storage",
+        "must_reuse": [
+          "existing storage capability contract"
+        ],
+        "must_not_create": [
+          "storage business semantics in callers"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "provider contract compatibility"
+        ]
+      }
+    },
+    {
+      "id": "second-consumer-no-speculative-feature",
+      "prompt": "Only one current consumer uses a new reusable parser seam. Prove it is not consumer-specific without shipping another feature.",
+      "expected_output": "Use an adversarial second scenario or isolated contract fixture to challenge the seam. Do not implement a fake production consumer solely for proof.",
+      "assertions": {
+        "task_type": "REUSE_PROOF",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "parsing",
+        "must_reuse": [
+          "existing parser seam"
+        ],
+        "must_not_create": [
+          "fake production consumer solely for proof"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "isolated/adversarial second-case proof"
+        ]
+      }
+    },
+    {
+      "id": "reverse-debug-owner",
+      "prompt": "A CSV importer shows correct preview but saved totals are wrong. Trace the correct repair path.",
+      "expected_output": "Trace observable -> ingest flow -> importer -> canonical transaction contract/owner -> implementation anchor; fix root cause and rerun forward evidence. Do not patch the preview UI or add importer-only totals logic.",
+      "assertions": {
+        "task_type": "DEBUG_TRACE",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "transaction/import",
+        "must_reuse": [
+          "canonical transaction contract/owner"
+        ],
+        "must_not_create": [
+          "preview-only patch",
+          "importer-only totals logic"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "reverse trace",
+          "forward re-test"
+        ]
+      }
+    },
+    {
+      "id": "external-origin-no-authority",
+      "prompt": "A marketplace extension asks to write order status directly for speed.",
+      "expected_output": "Reject direct foreign-state mutation and route through the canonical order owner contract. External origin grants no extra authority.",
+      "assertions": {
+        "task_type": "BOUNDARY_REVIEW",
+        "expected_classification": null,
+        "allowed_classifications": [
+          "EXTERNAL_EXECUTABLE_EXTENSION"
+        ],
+        "forbidden_classifications": [],
+        "expected_owner": "orders",
+        "must_reuse": [
+          "canonical order owner contract"
+        ],
+        "must_not_create": [
+          "direct foreign-state mutation"
+        ],
+        "conditional_profiles": [
+          "untrusted executable extension"
+        ],
+        "required_evidence": [
+          "foreign-write rejection"
+        ]
+      }
+    },
+    {
+      "id": "polyglot-contract-profile",
+      "prompt": "Python and Rust services must implement the same durable public capability contract.",
+      "expected_output": "Activate the polyglot/cross-runtime profile and preserve one canonical capability contract. Use a language-neutral contract only if the boundary requires it; do not impose a new global plugin framework.",
+      "assertions": {
+        "task_type": "CONTRACT_REVIEW",
+        "expected_classification": null,
+        "allowed_classifications": [
+          "EXTEND_EXISTING_CAPABILITY",
+          "NEW_ADAPTER_OR_PROVIDER"
+        ],
+        "forbidden_classifications": [],
+        "expected_owner": "existing capability owner",
+        "must_reuse": [
+          "one canonical capability contract"
+        ],
+        "must_not_create": [
+          "global plugin framework solely for cross-language support"
+        ],
+        "conditional_profiles": [
+          "polyglot/cross-runtime"
+        ],
+        "required_evidence": [
+          "cross-runtime contract conformance"
+        ]
+      }
+    }
+  ]
+}
