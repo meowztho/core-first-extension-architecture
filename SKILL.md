@@ -1,6 +1,6 @@
 ---
 name: core-first-extension-architecture
-description: Design, extend, review, refactor, or debug modular software by finding canonical responsibility owners, classifying the smallest semantic change, reusing before extending, composing consumers instead of duplicating core behavior, and converging multiple producers onto one canonical owner path. Use for reusable features, provider/adapter additions, import/build paths, configurable variants, repeated local implementations, extension points, plugin/mod systems, architecture repair, or Greenfield system decomposition. Do not use for trivial isolated edits where reuse, ownership, or system boundaries are not material.
+description: Design, extend, review, refactor, or debug modular software by decomposing responsibilities before resolving canonical owners, distinguishing owners from implementation roles, classifying the smallest semantic change, reusing before extending, composing consumers instead of duplicating core behavior, and converging multiple producers onto one canonical owner path. Use for reusable features, ownership ambiguity/conflicts/gaps, provider/adapter additions, import/build paths, configurable variants, repeated local implementations, extension points, plugin/mod systems, architecture repair, or Greenfield system decomposition. Do not use for trivial isolated edits where reuse, ownership, or system boundaries are not material.
 ---
 
 # Core-First Extension Architecture
@@ -70,6 +70,16 @@ Runtime Instance / Scoped State
 
 A module is not automatically a system. A provider is not automatically a new owner. A definition is not runtime state.
 
+## Responsibility-relative ownership resolution
+
+`Owner` is always relative to a **named responsibility**. Before declaring/replacing an owner, distinguish the canonical owner from the current carrier/decision path, implementation anchor, capability/module/provider, consumer/composition host, data/profile, migration target, or an unresolved gap.
+
+Current code location, class/file boundaries, size, and names do not prove ownership. If the same responsibility is independently decided or authoritatively written through multiple active paths, treat that as a parallel-owner conflict; controlled provider/module variants behind one canonical capability/owner are not parallel owners.
+
+If evidence is insufficient, keep ownership **unresolved** and test existing owner/capability, data/configuration, composition, module/provider, or capability extension before creating a new owner. Centralized data does not centralize shared behavior if consumers still execute the rule independently. Capability identity comes from its reusable semantic contract, not the number of implementations.
+
+**Role by semantics, not by name.**
+
 ### Project Authority Artifact
 
 A normative file/contract records project truth about an owner, capability, rule, or decision. It is not itself the runtime/domain owner. Keep documentation authority and semantic/runtime ownership distinct.
@@ -111,7 +121,7 @@ Debugging, discovery, review, migration assessment, and reuse-proof tasks are no
 ## Decision procedure
 
 1. Identify repository root, applicable instructions, Git state, current requirement, and relevant canonical authorities.
-2. Find the current responsibility owner and runtime/data path before changing behavior.
+2. Name the exact responsibility, then resolve its current carrier/effective decision path, implementation anchor, and canonical owner status before changing behavior. Do not infer ownership from class/file names or from the mere presence/size of an implementation.
 3. Ask whether the request is only data/configuration, a relative modifier, or a substitution at an existing slot.
 4. Reuse or compose an existing capability/module/provider before extending architecture.
 5. Add a reusable module beneath an existing capability before creating a new capability.
@@ -156,6 +166,7 @@ Use these tests:
 - If only values differ, prefer data/profile.
 - If one concrete behavior differs behind the same contract, prefer module/provider.
 - If multiple implementations satisfy the same semantic contract, prefer provider/module variants.
+- Do not require a second implementation before recognizing a real reusable capability; implementation count is evidence, not the definition.
 - If a genuinely new reusable semantic ability is missing, add a capability.
 - Avoid both god-capabilities and capability-sprawl.
 

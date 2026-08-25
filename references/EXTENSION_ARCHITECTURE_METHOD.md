@@ -80,6 +80,36 @@ Live mutable execution state. Never assume a shared definition object is safe fo
 ### Project Authority Artifact
 A normative document/file records project truth about owners, contracts, rules, and decisions. It is not itself the runtime/domain owner. Generated indexes, Atlas views, summaries, or routing files may point to authorities but do not become semantic owners.
 
+### Responsibility-relative owner resolution
+
+Resolve ownership only after naming the responsibility. Do not let a class name, file boundary, implementation size, or user shorthand substitute for that decomposition.
+
+Distinguish:
+
+```text
+canonical responsibility owner
+current responsibility carrier / effective decision path
+implementation anchor
+capability contract
+module/provider
+consumer/composition host
+definition/profile/data
+planned migration target
+unresolved ownership gap
+```
+
+Three common recovery cases:
+
+1. **God/container class:** a large class may currently carry several legitimate responsibilities. Decompose them, then route each responsibility to an existing canonical owner/capability where supported. Do not create one new Master System per method group merely because the class is large.
+2. **Parallel owner:** if two active paths independently decide/write the same responsibility, canonicalize them. An interface does not solve the conflict if consumers still choose competing authorities; conversely, multiple controlled providers behind one canonical capability are not multiple owners merely because implementations differ.
+3. **Ownership gap:** if no clean canonical owner is established, keep the gap explicit while testing data/configuration, composition, existing owner/capability extension, module/provider, or genuinely new capability. Do not invent an owner to make the diagram complete.
+
+Data centralization is not behavior convergence. A shared profile can own thresholds/patterns/definitions, but if every consumer still interprets and executes the same semantic rule independently, the behavior remains duplicated. Route shared semantic behavior through one reusable canonical path, which may be a small module/capability under an existing owner rather than a new service/system.
+
+Capability identity is semantic. One implementation can satisfy a meaningful reusable contract; multiple implementations can remain variants of one contract. Never use implementation count alone to create, merge, or reject a capability.
+
+Names are non-authoritative. `Service`, `Manager`, `Controller`, `Repository`, `Engine`, `Factory`, `Facade`, `Helper`, `Host`, `Renderer`, `Base`, or interface naming conventions do not determine architectural role.
+
 ## 5. Interaction semantics
 
 Use only the semantic distinction universally:
@@ -241,6 +271,9 @@ Do not patch an upstream symptom when the canonical owner is wrong.
 ## 14. Acceptance
 
 Use only relevant tests:
+- responsibility-to-owner/role mapping grounded in authority/runtime flow;
+- current carrier distinguished from canonical owner where they differ;
+- behavior convergence, not only centralized values;
 - second-consumer/provider;
 - producer convergence;
 - no parallel owner;

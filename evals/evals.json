@@ -523,6 +523,202 @@
           "cross-runtime contract conformance"
         ]
       }
+    },
+    {
+      "id": "owner-resolution-is-responsibility-relative",
+      "prompt": "MegaService is 2,000 lines and currently contains persistence, logging, HTTP calls, and user validation. Audit its Core-First ownership. Do not assume new classes are required.",
+      "expected_output": "Decompose the four responsibilities first. Treat MegaService as a current carrier/implementation anchor that may contain several responsibilities, not as proof of one canonical owner or proof that four new Master Systems are required. Resolve each responsibility against existing project owners/capabilities; leave unsupported ownership unresolved.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": null,
+        "must_reuse": [
+          "existing owners/capabilities where supported"
+        ],
+        "must_not_create": [
+          "one new Master System per method group based only on class size",
+          "owner inferred from class boundary"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "named responsibilities",
+          "current carrier versus canonical-owner distinction"
+        ]
+      }
+    },
+    {
+      "id": "parallel-owner-vs-provider-variants",
+      "prompt": "UserStore and UserRepository both Save/Get users and different consumers call either directly. In a second variant, SqlUserRepository and CachedUserRepository implement one IUserRepository contract and exactly one provider is selected per context by the canonical persistence owner. Compare the two architectures.",
+      "expected_output": "The first variant is a parallel-owner conflict for one persistence responsibility if both are independent active authorities. The second can be legitimate provider substitution behind one canonical capability/owner contract. Multiple implementations alone do not imply multiple owners or multiple capabilities.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "one canonical user-persistence responsibility owner",
+        "must_reuse": [
+          "canonical persistence capability/contract where present"
+        ],
+        "must_not_create": [
+          "third owner to wrap both competing authorities",
+          "separate capability solely because provider implementations differ"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "consumer call path",
+          "authoritative write/decision path",
+          "provider selection semantics"
+        ]
+      }
+    },
+    {
+      "id": "data-profile-does-not-own-shared-behavior",
+      "prompt": "Three controllers duplicate the same email/password/age validation logic. A UserValidationProfile centralizes the thresholds and patterns, but each controller still performs the validation rules itself. Is Core-First satisfied?",
+      "expected_output": "No. The profile can own declarative values/definitions, but shared semantic validation behavior is still duplicated across consumers. Reuse or add the smallest canonical validation behavior path under the appropriate existing owner/capability; do not require a heavyweight new service if a small reusable module is sufficient.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": null,
+        "allowed_classifications": [
+          "ADD_REUSABLE_MODULE",
+          "EXTEND_EXISTING_CAPABILITY",
+          "NEW_REUSABLE_CAPABILITY"
+        ],
+        "forbidden_classifications": [],
+        "expected_owner": "appropriate existing user/domain owner or explicitly justified capability owner",
+        "must_reuse": [
+          "central validation definitions",
+          "one reusable semantic validation path"
+        ],
+        "must_not_create": [
+          "consumer-local duplicate validation semantics",
+          "new service solely because values were centralized"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "shared rule execution converges, not only shared values"
+        ]
+      }
+    },
+    {
+      "id": "capability-does-not-require-two-implementations",
+      "prompt": "A reusable UserValidation semantic contract is consumed by several workflows but currently has only one implementation. A reviewer says it cannot be a capability until a second implementation exists. Evaluate that claim.",
+      "expected_output": "Reject the implementation-count rule. A coherent reusable semantic contract can be a capability with one implementation. A second implementation is useful evidence for provider variation, not a prerequisite for capability identity.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "owner of the validation responsibility",
+        "must_reuse": [
+          "semantic contract if genuinely reusable"
+        ],
+        "must_not_create": [
+          "fake second implementation solely to justify the capability"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "semantic contract and real consumers"
+        ]
+      }
+    },
+    {
+      "id": "multiple-implementations-do-not-imply-multiple-capabilities",
+      "prompt": "MemoryStorage, FileStorage, and PostgresStorage all satisfy the same storage semantics. Should each become its own capability because the implementations differ?",
+      "expected_output": "No. Keep one storage capability contract when semantics are the same and model the concrete implementations as modules/providers. Create separate capabilities only when the semantic contracts genuinely differ.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "storage responsibility owner",
+        "must_reuse": [
+          "one coherent storage capability contract"
+        ],
+        "must_not_create": [
+          "one capability per implementation"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "contract semantics across implementations"
+        ]
+      }
+    },
+    {
+      "id": "role-by-semantics-not-symbol-name",
+      "prompt": "The repository contains PaymentManager, PaymentService, PaymentFacade, PaymentFactory, IPaymentProvider, and PaymentController. Determine which is the payment owner from these names alone.",
+      "expected_output": "Do not assign or reject ownership from names. Inspect responsibility, project authority, authoritative decisions/writes, contracts, runtime/data flow, and consumer/provider relationships. If those facts are unavailable, ownership remains unresolved.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": null,
+        "must_reuse": [],
+        "must_not_create": [
+          "owner conclusion from naming convention alone"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "responsibility",
+          "authority",
+          "decision/write path",
+          "contract/runtime flow"
+        ]
+      }
+    },
+    {
+      "id": "ownership-gap-remains-unresolved-until-supported",
+      "prompt": "Repeated pricing policy exists in several consumers, but project authorities and runtime evidence do not establish which existing system should own it. The architecture map has an empty owner field. Complete the map.",
+      "expected_output": "Keep the ownership gap explicit while investigating existing responsibility/capability boundaries and the smallest semantic change. Do not invent PricingManager/PricingService merely to fill the diagram. Create a new owner/capability only after evidence establishes a genuinely missing reusable responsibility/contract.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": null,
+        "must_reuse": [
+          "existing owner/capability search"
+        ],
+        "must_not_create": [
+          "invented owner merely to complete the map"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "explicit unresolved gap",
+          "evidence threshold before new owner"
+        ]
+      }
+    },
+    {
+      "id": "current-carrier-is-not-automatically-canonical-owner",
+      "prompt": "LegacyController currently contains the only implementation of a discount rule, but the project authority says pricing policy belongs to the Pricing responsibility and the controller should only compose it. What is LegacyController's role?",
+      "expected_output": "Treat LegacyController as the current implementation anchor/carrier of misplaced behavior, not as the canonical pricing owner. Route the correction to the documented Pricing owner/capability and remove the consumer-local rule path.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": null,
+        "allowed_classifications": [
+          "COMPOSE_EXISTING_CAPABILITY",
+          "EXTEND_EXISTING_CAPABILITY"
+        ],
+        "forbidden_classifications": [
+          "NEW_REUSABLE_CAPABILITY"
+        ],
+        "expected_owner": "Pricing responsibility owner",
+        "must_reuse": [
+          "project authority",
+          "existing Pricing owner/capability"
+        ],
+        "must_not_create": [
+          "LegacyController as canonical owner solely because code currently lives there"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "authority-to-runtime correction",
+          "consumer-local path removed"
+        ]
+      }
     }
   ]
 }

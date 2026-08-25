@@ -1,6 +1,6 @@
 interface:
   display_name: "Core-First Extension Architecture"
-  short_description: "Architect around canonical ownership and reuse"
-  default_prompt: "Use $core-first-extension-architecture to find the canonical owner, classify the change, and choose the smallest reusable implementation."
+  short_description: "Resolve responsibilities, ownership, roles, and reuse"
+  default_prompt: "Use $core-first-extension-architecture to decompose the exact responsibility, distinguish canonical owner from current carrier/implementation role, classify the smallest semantic change, and choose the smallest reusable implementation."
 policy:
   allow_implicit_invocation: false
