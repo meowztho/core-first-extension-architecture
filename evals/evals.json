@@ -719,6 +719,151 @@
           "consumer-local path removed"
         ]
       }
+    },
+    {
+      "id": "owner-does-not-require-second-consumer",
+      "prompt": "A SecurityPolicy owner has one real consumer and one implementation. A reviewer says it cannot be a canonical owner until a second consumer or adversarial mock consumer exists. Evaluate the claim.",
+      "expected_output": "Reject the claim. Owner existence follows from the named responsibility and authoritative boundary, not consumer count. A second-consumer challenge is relevant only if semantic reusability of a capability/seam is being claimed.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "SecurityPolicy responsibility owner if supported by authority/runtime evidence",
+        "must_reuse": [
+          "responsibility and authoritative decision boundary"
+        ],
+        "must_not_create": [
+          "fake second consumer solely to admit an owner"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "owner-existence versus reuse-proof distinction"
+        ]
+      }
+    },
+    {
+      "id": "shared-lifecycle-does-not-merge-responsibilities",
+      "prompt": "MatchSession and ScoreAuthority both begin at match start and end at match teardown. They make different authoritative decisions. Must they be one owner because their lifecycle scopes are identical?",
+      "expected_output": "No. Lifecycle overlap is evidence, not an ownership criterion. Keep distinct canonical owners when the named responsibilities and decision authorities are distinct; do not merge them solely because lifecycle boundaries match.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": "separate owners when responsibility evidence supports it",
+        "must_reuse": [],
+        "must_not_create": [
+          "ownership conclusion from lifecycle overlap alone"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "named responsibilities",
+          "authoritative decisions"
+        ]
+      }
+    },
+    {
+      "id": "responsibility-owner-precedes-interface-design",
+      "prompt": "A new Spectator feature is requested. An architect starts by defining ISpectatorViewSource and then uses that interface as proof that a new Spectator owner exists. Apply Core-First.",
+      "expected_output": "Reverse the reasoning. Establish the exact responsibility and canonical owner boundary first, after reuse/extension checks; only then define the smallest capability contract if needed. A capability contract need not be a language-level interface, and an invented interface cannot establish ownership.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": null,
+        "must_reuse": [
+          "Responsibility → Owner → Capability Contract order"
+        ],
+        "must_not_create": [
+          "owner inferred from invented interface",
+          "language-level interface solely to prove capability"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "existing owner/capability search",
+          "responsibility boundary before contract"
+        ]
+      }
+    },
+    {
+      "id": "gap-resolution-gate-before-new-owner",
+      "prompt": "A readiness decision is missing from the architecture map. Several existing capabilities provide partial facts, and an existing pre-match/session owner might be able to compose them, but this has not been investigated. Should a ReadinessCoordinator be declared now?",
+      "expected_output": "No. Gap detection does not authorize owner creation. Test existing owner/capability extension or composition and smaller data/module/provider paths first. Until those are ruled out and a distinct canonical responsibility boundary is evidenced, keep the ownership gap unresolved.",
+      "assertions": {
+        "task_type": "RESPONSIBILITY_DISCOVERY",
+        "expected_classification": null,
+        "allowed_classifications": [],
+        "forbidden_classifications": [],
+        "expected_owner": null,
+        "must_reuse": [
+          "existing owner/capability search",
+          "composition/extension before new owner"
+        ],
+        "must_not_create": [
+          "ReadinessCoordinator before gap-resolution evidence"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "explicit unresolved gap",
+          "rejected existing-owner paths before new owner"
+        ]
+      }
+    },
+    {
+      "id": "foreign-write-is-not-automatically-parallel-owner",
+      "prompt": "FighterState is documented and enforced as the canonical HP owner. CombatResolver writes HP through FighterState, but BuffSystem directly mutates the HP field. Does BuffSystem automatically become a second canonical owner?",
+      "expected_output": "No. The direct mutation is an unauthorized foreign-write/bypass of the established owner unless evidence shows BuffSystem independently claims authoritative ownership. Route the write through FighterState; do not invent a parallel-owner classification merely because there are two write paths.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": null,
+        "allowed_classifications": [
+          "COMPOSE_EXISTING_CAPABILITY",
+          "EXTEND_EXISTING_CAPABILITY"
+        ],
+        "forbidden_classifications": [
+          "NEW_REUSABLE_CAPABILITY"
+        ],
+        "expected_owner": "FighterState HP responsibility owner",
+        "must_reuse": [
+          "existing FighterState owner path"
+        ],
+        "must_not_create": [
+          "BuffSystem as second owner from write-path count alone"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "established owner authority",
+          "foreign write path removed"
+        ]
+      }
+    },
+    {
+      "id": "reuse-existing-architecture-authority-before-new-ownership-doc",
+      "prompt": "SYSTEM_MAP.yaml and CAPABILITY_GRAPH.yaml are canonical project authorities. A new justified owner is added. Should the agent also create contracts/OWNERSHIP.md as a new authority by default?",
+      "expected_output": "No. Update the existing canonical architecture authorities. Add another durable artifact only if the project actually needs and declares that distinct authority; do not create a parallel ownership map merely because a new owner was introduced.",
+      "assertions": {
+        "task_type": "CHANGE",
+        "expected_classification": null,
+        "allowed_classifications": [
+          "NEW_REUSABLE_CAPABILITY",
+          "EXTEND_EXISTING_CAPABILITY"
+        ],
+        "forbidden_classifications": [],
+        "expected_owner": null,
+        "must_reuse": [
+          "SYSTEM_MAP.yaml",
+          "CAPABILITY_GRAPH.yaml"
+        ],
+        "must_not_create": [
+          "parallel OWNERSHIP.md authority by default"
+        ],
+        "conditional_profiles": [],
+        "required_evidence": [
+          "existing project authority updated"
+        ]
+      }
     }
   ]
 }

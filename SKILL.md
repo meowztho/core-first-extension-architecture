@@ -72,17 +72,19 @@ A module is not automatically a system. A provider is not automatically a new ow
 
 ## Responsibility-relative ownership resolution
 
-`Owner` is always relative to a **named responsibility**. Before declaring/replacing an owner, distinguish the canonical owner from the current carrier/decision path, implementation anchor, capability/module/provider, consumer/composition host, data/profile, migration target, or an unresolved gap.
+`Owner` is always relative to a **named responsibility**. Distinguish the canonical owner from the current carrier/decision path, implementation anchor, capability/module/provider, consumer/composition host, data/profile, migration target, or unresolved gap.
 
-Current code location, class/file boundaries, size, and names do not prove ownership. If the same responsibility is independently decided or authoritatively written through multiple active paths, treat that as a parallel-owner conflict; controlled provider/module variants behind one canonical capability/owner are not parallel owners.
+Owner existence and reusable-seam proof are different questions. A canonical owner does **not** require multiple consumers/implementations, a unique lifecycle, or a language-level interface. Lifecycle, state proximity, and counts are evidence, not mandatory ownership criteria. Second-consumer/provider proof applies only when seam/capability reusability is material.
 
-If evidence is insufficient, keep ownership **unresolved** and test existing owner/capability, data/configuration, composition, module/provider, or capability extension before creating a new owner. Centralized data does not centralize shared behavior if consumers still execute the rule independently. Capability identity comes from its reusable semantic contract, not the number of implementations.
+Code location, class/file boundaries, size, and names do not prove ownership. Multiple authoritative paths may form a parallel-owner conflict; a foreign write may instead bypass an established owner. Controlled provider/module variants behind one canonical owner are not parallel owners.
+
+A detected gap does not authorize a new owner. Test existing owner/capability extension/composition, data/configuration, and module/provider paths first; otherwise keep ownership **unresolved**. Resolve `Responsibility → Owner → Capability Contract`; an invented interface cannot establish the owner. Centralized data does not centralize shared behavior when consumers still execute the rule. Capability identity comes from reusable semantics, not implementation count.
 
 **Role by semantics, not by name.**
 
 ### Project Authority Artifact
 
-A normative file/contract records project truth about an owner, capability, rule, or decision. It is not itself the runtime/domain owner. Keep documentation authority and semantic/runtime ownership distinct.
+A normative file/contract records project truth; it is not itself the runtime/domain owner. Keep documentation authority and semantic/runtime ownership distinct.
 
 ## Interaction semantics
 
@@ -125,7 +127,7 @@ Debugging, discovery, review, migration assessment, and reuse-proof tasks are no
 3. Ask whether the request is only data/configuration, a relative modifier, or a substitution at an existing slot.
 4. Reuse or compose an existing capability/module/provider before extending architecture.
 5. Add a reusable module beneath an existing capability before creating a new capability.
-6. Extend an existing capability before creating another system owner.
+6. Extend/compose an existing owner/capability before another system owner; keep a gap unresolved until a distinct responsibility and owner boundary are evidenced.
 7. Add a new capability only when a distinct reusable semantic contract is genuinely missing.
 8. Add an adapter/provider when the variation is implementation or external integration behind an existing owner.
 9. Add a new extension point only when multiple future producers/consumers genuinely need a declared seam.
@@ -267,7 +269,7 @@ Warning signs:
 
 Use the smallest relevant proof set:
 
-- second-consumer/provider reuse;
+- second-consumer/provider reuse when semantic reusability of a seam/capability is material;
 - producer convergence;
 - no parallel state/decision owner;
 - forbidden foreign-write rejection;
@@ -278,7 +280,7 @@ Use the smallest relevant proof set:
 - reverse-debug path;
 - actual user-surface or externally observable behavior.
 
-The second consumer/provider should be meaningfully different enough to prove the seam is semantic, not merely named after the first case. Do not implement speculative production features just to satisfy this proof; when no real second consumer exists, use an adversarial design scenario, contract test, isolated fixture, or fresh-agent architecture challenge.
+When reusability is the claim, use a meaningfully different second consumer/provider to challenge the seam. This is not an owner prerequisite. Use an adversarial scenario, contract test, fixture, or fresh-agent challenge instead of speculative production features.
 
 ## Do not overbuild
 

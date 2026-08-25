@@ -101,8 +101,12 @@ unresolved ownership gap
 Three common recovery cases:
 
 1. **God/container class:** a large class may currently carry several legitimate responsibilities. Decompose them, then route each responsibility to an existing canonical owner/capability where supported. Do not create one new Master System per method group merely because the class is large.
-2. **Parallel owner:** if two active paths independently decide/write the same responsibility, canonicalize them. An interface does not solve the conflict if consumers still choose competing authorities; conversely, multiple controlled providers behind one canonical capability are not multiple owners merely because implementations differ.
-3. **Ownership gap:** if no clean canonical owner is established, keep the gap explicit while testing data/configuration, composition, existing owner/capability extension, module/provider, or genuinely new capability. Do not invent an owner to make the diagram complete.
+2. **Parallel owner / foreign write:** if two active paths independently claim authority over the same responsibility, canonicalize them. If one path merely bypasses an already-established owner, treat it as a foreign-write violation instead of inventing a second owner. Multiple controlled providers behind one canonical capability are not multiple owners merely because implementations differ.
+3. **Ownership gap:** detecting a gap means the current model lacks a supported canonical assignment; it does **not** prove a new owner is required. Test existing-owner/capability extension or composition, data/configuration, and module/provider paths first. If none is supported yet, keep the gap unresolved. Create a new owner only after evidence establishes a distinct responsibility and canonical boundary.
+
+Ownership evidence is not a checklist of mandatory structural traits. Shared or distinct lifecycle, state proximity, number of consumers, and number of implementations can inform the decision but do not establish ownership by themselves. A legitimate owner may share a lifecycle with another owner and may have one consumer and one implementation.
+
+Resolve architecture in semantic order: `Responsibility → Owner → Capability Contract`. A capability contract need not be a language-level interface, and an invented interface must not be used to manufacture or prove an owner.
 
 Data centralization is not behavior convergence. A shared profile can own thresholds/patterns/definitions, but if every consumer still interprets and executes the same semantic rule independently, the behavior remains duplicated. Route shared semantic behavior through one reusable canonical path, which may be a small module/capability under an existing owner rather than a new service/system.
 
@@ -274,7 +278,7 @@ Use only relevant tests:
 - responsibility-to-owner/role mapping grounded in authority/runtime flow;
 - current carrier distinguished from canonical owner where they differ;
 - behavior convergence, not only centralized values;
-- second-consumer/provider;
+- second-consumer/provider only when semantic reusability is the claim;
 - producer convergence;
 - no parallel owner;
 - foreign-write rejection;
@@ -299,7 +303,7 @@ No registry, manifest, plugin loader, extension point, service container, or eve
 
 ## 16. Second-consumer proof without speculative product work
 
-Reuse should be challenged by a meaningfully different second case, but do not add fake production features solely to prove abstraction.
+Use a meaningfully different second case only when testing whether a seam/capability is genuinely reusable. It is not an owner-admission rule and is not required to justify a responsibility owner. Do not add fake production features solely to prove abstraction.
 
 Preferred proof order:
 
